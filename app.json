@@ -16,6 +16,11 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.pesonest.app",
+      "splash": {
+        "image": "./assets/images/pesonest-app-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#FDF1E7"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "PesoNest needs camera access to scan QR codes for joint loans."
       }
@@ -23,6 +28,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-adaptive-icon.png",
+        "backgroundColor": "#FDF1E7"
+      },
+      "splash": {
+        "image": "./assets/images/pesonest-app-icon.png",
+        "resizeMode": "contain",
         "backgroundColor": "#FDF1E7"
       },
       "package": "com.pesonest.app"
