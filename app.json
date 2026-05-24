@@ -4,12 +4,12 @@
     "slug": "pesonest",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon.png",
+    "icon": "./assets/images/pesonest-app-icon.png",
     "scheme": "pesonest",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FDF1E7",
     "splash": {
-      "image": "./assets/images/app-icon.png",
+      "image": "./assets/images/pesonest-app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#FDF1E7"
     },
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon.png",
+        "foregroundImage": "./assets/images/pesonest-app-icon.png",
         "backgroundColor": "#FDF1E7"
       },
       "package": "com.pesonest.app"
@@ -38,7 +38,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#FDF1E7",
-          "image": "./assets/images/app-icon.png",
+          "image": "./assets/images/pesonest-app-icon.png",
           "resizeMode": "contain"
         }
       ]
