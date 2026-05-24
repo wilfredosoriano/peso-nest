@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
 // ─── Replace these with your real RevenueCat API keys when ready ───────────
-export const RC_API_KEY_IOS     = 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-export const RC_API_KEY_ANDROID = 'goog_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+export const RC_API_KEY_IOS     = process.env.EXPO_PUBLIC_RC_API_KEY_IOS     ?? '';
+export const RC_API_KEY_ANDROID = process.env.EXPO_PUBLIC_RC_API_KEY_ANDROID ?? '';
 // ──────────────────────────────────────────────────────────────────────────
 
 export const ENTITLEMENT_ID = 'premium';

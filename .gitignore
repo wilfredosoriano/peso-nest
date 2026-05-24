@@ -31,6 +31,10 @@ ios/DerivedData/
 *.key
 *.mobileprovision
 
+# Environment variables
+.env
+.env.local
+
 # OS
 .DS_Store
 yarn-error.log
