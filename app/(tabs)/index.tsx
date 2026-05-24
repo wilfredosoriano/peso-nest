@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  Dimensions, ImageBackground,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, ImageBackground,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -14,28 +13,63 @@ import { TransactionItem } from '../../src/components/ui/TransactionItem';
 import { AddTransactionModal } from '../../src/components/ui/AddTransactionModal';
 import { Colors } from '../../src/constants/Colors';
 import { formatCurrency } from '../../src/utils/formatters';
+import { UserAvatar } from '../../src/components/ui/UserAvatar';
+import { rs } from '../../src/utils/responsive';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-const { width } = Dimensions.get('window');
+// 0 = Sunday … 6 = Saturday
+const DAILY_MESSAGES = [
+  "Rest up and review your\nweekly spending today! 🌿",       // Sunday
+  "New week, fresh start.\nLet's crush those money goals! 💪", // Monday
+  "Stay consistent — small\nsavings add up fast! 🐷",          // Tuesday
+  "Halfway there! Check if\nyou're on budget today. 📊",       // Wednesday
+  "Almost Friday! Avoid\nimpulse buys and stay strong. 🎯",    // Thursday
+  "It's payday energy —\nbudget first, treat after! 🎉",       // Friday
+  "Weekend mode on!\nSpend wisely and enjoy. ☀️",              // Saturday
+];
 
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const user = useAppStore((s) => s.user);
   const transactions = useAppStore((s) => s.transactions);
+  const cards = useAppStore((s) => s.cards);
+  const loans = useAppStore((s) => s.loans);
+  const hideBalance = useAppStore((s) => s.hideBalance);
+  const toggleHideBalance = useAppStore((s) => s.toggleHideBalance);
   const [showAdd, setShowAdd] = useState(false);
-  const [hideBalance, setHideBalance] = useState(false);
 
   const now = new Date();
-  const thisMonth = useMemo(() =>
+  const [selYear, setSelYear] = useState(now.getFullYear());
+  const [selMonth, setSelMonth] = useState(now.getMonth());
+
+  const isCurrentMonth = selYear === now.getFullYear() && selMonth === now.getMonth();
+  const monthLabel = `${MONTHS[selMonth]} ${selYear}`;
+
+  const goPrev = () => {
+    if (selMonth === 0) { setSelYear((y) => y - 1); setSelMonth(11); }
+    else setSelMonth((m) => m - 1);
+  };
+  const goNext = () => {
+    if (isCurrentMonth) return;
+    if (selMonth === 11) { setSelYear((y) => y + 1); setSelMonth(0); }
+    else setSelMonth((m) => m + 1);
+  };
+
+  const monthTxns = useMemo(() =>
     transactions.filter((t) => {
       const d = new Date(t.date);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    }), [transactions]);
+      return d.getMonth() === selMonth && d.getFullYear() === selYear;
+    }), [transactions, selMonth, selYear]);
 
-  const totalIncome = useMemo(() => thisMonth.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0), [thisMonth]);
-  const totalExpense = useMemo(() => thisMonth.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0), [thisMonth]);
-  const balance = totalIncome - totalExpense;
+  const totalIncome = useMemo(() => monthTxns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0), [monthTxns]);
+  const totalExpense = useMemo(() => monthTxns.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0), [monthTxns]);
+  const cardNetBalance = cards.reduce((s, c) => c.type === 'debit' ? s + c.balance : s - c.balance, 0);
+  // Net worth = what you actually have (savings + card balances).
+  // Loans are shown separately on the Loans screen — not deducted here
+  // so users who carry debt still see a meaningful positive figure.
+  const netWorth = cardNetBalance;
   const budgetUsedPct = user ? Math.min((totalExpense / user.monthlyBudget) * 100, 100) : 0;
-  const recentTxns = useMemo(() => transactions.slice(0, 5), [transactions]);
+  const recentTxns = useMemo(() => monthTxns.slice(0, 5), [monthTxns]);
 
   return (
     <View style={styles.container}>
@@ -57,13 +91,11 @@ export default function DashboardScreen() {
 
           <View style={styles.headerTop}>
             <View>
-              <Text style={styles.greeting}>Hi, {user?.name ?? 'there'}! 👋</Text>
-              <Text style={styles.greetingSub}>Let's have a good day{'\n'}and stick to your budget!</Text>
+              <Text style={styles.greeting}>Hi, {user?.name ?? 'there'}!</Text>
+              <Text style={styles.greetingSub}>{DAILY_MESSAGES[now.getDay()]}</Text>
             </View>
             <TouchableOpacity onPress={() => router.push('/profile')} style={styles.avatarBtn}>
-              <LinearGradient colors={[Colors.primary, Colors.primaryDark]} style={styles.avatar}>
-                <Text style={styles.avatarText}>{(user?.name ?? 'H')[0].toUpperCase()}</Text>
-              </LinearGradient>
+              <UserAvatar avatarStyle={user?.avatarStyle} name={user?.name} size={44} />
             </TouchableOpacity>
           </View>
         </ImageBackground>
@@ -72,18 +104,26 @@ export default function DashboardScreen() {
           {/* Balance card — floats over the bottom edge of the header image */}
           <View style={styles.balanceCard}>
             <View style={styles.balanceRow}>
-              <Text style={styles.balanceLabel}>Total Balance</Text>
-              <TouchableOpacity onPress={() => setHideBalance((v) => !v)}>
-                <Ionicons name={hideBalance ? 'eye-off-outline' : 'eye-outline'} size={18} color={Colors.textMedium} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={styles.balanceLabel}>Net Worth</Text>
+                {netWorth < 0 && !hideBalance && (
+                  <View style={styles.negBadge}>
+                    <Ionicons name="warning" size={rs(10)} color={Colors.expense} />
+                    <Text style={styles.negBadgeText}>Credit exceeds funds</Text>
+                  </View>
+                )}
+              </View>
+              <TouchableOpacity onPress={toggleHideBalance}>
+                <Ionicons name={hideBalance ? 'eye-off-outline' : 'eye-outline'} size={rs(18)} color={Colors.textMedium} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.balanceAmount}>
-              {hideBalance ? '₱ ••••••' : formatCurrency(balance)}
+            <Text style={[styles.balanceAmount, !hideBalance && netWorth < 0 && { color: Colors.expense }]}>
+              {hideBalance ? '₱ ••••••' : formatCurrency(netWorth)}
             </Text>
             <View style={styles.incExpRow}>
               <View style={styles.incExpItem}>
                 <View style={[styles.incExpIcon, { backgroundColor: Colors.incomeLight }]}>
-                  <Ionicons name="arrow-down" size={14} color={Colors.income} />
+                  <Ionicons name="arrow-down-circle" size={rs(20)} color={Colors.income} />
                 </View>
                 <View>
                   <Text style={styles.incExpLabel}>Income</Text>
@@ -95,7 +135,7 @@ export default function DashboardScreen() {
               <View style={styles.divider} />
               <View style={styles.incExpItem}>
                 <View style={[styles.incExpIcon, { backgroundColor: Colors.expenseLight }]}>
-                  <Ionicons name="arrow-up" size={14} color={Colors.expense} />
+                  <Ionicons name="arrow-up-circle" size={rs(20)} color={Colors.expense} />
                 </View>
                 <View>
                   <Text style={styles.incExpLabel}>Expense</Text>
@@ -110,9 +150,15 @@ export default function DashboardScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Budget Overview</Text>
-              <TouchableOpacity>
-                <Text style={styles.thisMonth}>This Month ∨</Text>
-              </TouchableOpacity>
+              <View style={styles.monthNav}>
+                <TouchableOpacity onPress={goPrev} style={styles.monthArrow}>
+                  <Ionicons name="chevron-back" size={rs(14)} color={Colors.primary} />
+                </TouchableOpacity>
+                <Text style={styles.monthLabel}>{monthLabel}</Text>
+                <TouchableOpacity onPress={goNext} style={[styles.monthArrow, isCurrentMonth && { opacity: 0.3 }]}>
+                  <Ionicons name="chevron-forward" size={rs(14)} color={isCurrentMonth ? Colors.border : Colors.primary} />
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={styles.budgetCard}>
               <View style={styles.budgetRingWrap}>
@@ -149,12 +195,12 @@ export default function DashboardScreen() {
             </View>
             {recentTxns.length === 0 ? (
               <View style={styles.emptyState}>
-                <Ionicons name="receipt-outline" size={40} color={Colors.textLight} />
+                <Ionicons name="receipt-outline" size={rs(40)} color={Colors.textLight} />
                 <Text style={styles.emptyText}>No transactions yet</Text>
               </View>
             ) : (
               recentTxns.map((tx) => (
-                <TransactionItem key={tx.id} transaction={tx} />
+                <TransactionItem key={tx.id} transaction={tx} hideBalance={hideBalance} />
               ))
             )}
           </View>
@@ -164,7 +210,7 @@ export default function DashboardScreen() {
       {/* FAB */}
       <TouchableOpacity style={[styles.fab, { bottom: 76 + insets.bottom }]} onPress={() => setShowAdd(true)}>
         <LinearGradient colors={[Colors.primary, Colors.primaryDark]} style={styles.fabGradient}>
-          <Ionicons name="add" size={28} color="#fff" />
+          <Ionicons name="add" size={rs(28)} color="#fff" />
         </LinearGradient>
       </TouchableOpacity>
 
@@ -192,30 +238,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   greeting: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: rs(22),
+    fontFamily: 'Cause-ExtraBold',
     color: '#fff',
   },
   greetingSub: {
-    fontSize: 13,
+    fontSize: rs(13),
     color: 'rgba(255,255,255,0.8)',
     marginTop: 2,
     lineHeight: 18,
   },
-  avatarBtn: {},
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
-  },
-  avatarText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#fff',
+  avatarBtn: {
+    borderRadius: 26,
+    borderWidth: 2.5,
+    borderColor: Colors.primary,
+    padding: 2,
+    backgroundColor: Colors.primary,
   },
   balanceCard: {
     backgroundColor: '#fff',
@@ -235,13 +273,27 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceLabel: {
-    fontSize: 13,
+    fontSize: rs(13),
     color: Colors.textMedium,
-    fontWeight: '500',
+    fontFamily: 'Cause-Medium',
+  },
+  negBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: Colors.expenseLight,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  negBadgeText: {
+    fontSize: rs(10),
+    fontFamily: 'Cause-SemiBold',
+    color: Colors.expense,
   },
   balanceAmount: {
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: rs(32),
+    fontFamily: 'Cause-ExtraBold',
     color: Colors.textDark,
     marginBottom: 16,
     letterSpacing: -0.5,
@@ -257,19 +309,19 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   incExpIcon: {
-    width: 34,
-    height: 34,
+    width: rs(34),
+    height: rs(34),
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   incExpLabel: {
-    fontSize: 12,
+    fontSize: rs(12),
     color: Colors.textLight,
   },
   incExpAmount: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: rs(14),
+    fontFamily: 'Cause-Bold',
     marginTop: 1,
   },
   divider: {
@@ -293,19 +345,17 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: rs(16),
+    fontFamily: 'Cause-Bold',
     color: Colors.textDark,
   },
-  thisMonth: {
-    fontSize: 13,
-    color: Colors.textMedium,
-    fontWeight: '500',
-  },
+  monthNav: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  monthArrow: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
+  monthLabel: { fontSize: rs(12), fontFamily: 'Cause-SemiBold', color: Colors.textMedium, minWidth: 64, textAlign: 'center' },
   seeAll: {
-    fontSize: 13,
+    fontSize: rs(13),
     color: Colors.primary,
-    fontWeight: '600',
+    fontFamily: 'Cause-SemiBold',
   },
   budgetCard: {
     backgroundColor: Colors.card,
@@ -339,12 +389,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   budgetPct: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: rs(22),
+    fontFamily: 'Cause-ExtraBold',
     color: Colors.textDark,
   },
   budgetPctSub: {
-    fontSize: 9,
+    fontSize: rs(9),
     color: Colors.textLight,
     textAlign: 'center',
   },
@@ -356,12 +406,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   budgetRowLabel: {
-    fontSize: 13,
+    fontSize: rs(13),
     color: Colors.textLight,
   },
   budgetRowValue: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: rs(13),
+    fontFamily: 'Cause-Bold',
     color: Colors.textDark,
   },
   budgetProgressTrack: {
@@ -383,7 +433,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: Colors.textLight,
     marginTop: 8,
-    fontSize: 14,
+    fontSize: rs(14),
   },
   fab: {
     position: 'absolute',
@@ -395,8 +445,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   fabGradient: {
-    width: 56,
-    height: 56,
+    width: rs(56),
+    height: rs(56),
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',

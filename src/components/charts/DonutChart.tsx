@@ -40,7 +40,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
             const dashOffset = circumference - (prevPercentage / 100) * circumference;
             return (
               <Circle
-                key={seg.category}
+                key={`${seg.category}-${i}`}
                 cx={center}
                 cy={center}
                 r={radius}
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 15,
-    fontWeight: '700',
+    fontFamily: 'Cause-Bold',
     color: '#1A0E00',
     textAlign: 'center',
   },

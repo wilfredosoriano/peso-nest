@@ -7,9 +7,12 @@ export interface User {
   id: string;
   name: string;
   avatarColor: string;
+  avatarStyle?: string;
   currency: string;
   monthlyBudget: number;
   isPremium: boolean;
+  notificationsEnabled: boolean;
+  notificationsDaysBefore: number;
   createdAt: number;
 }
 
@@ -40,10 +43,19 @@ export interface Card {
   createdAt: number;
 }
 
+export type PaymentFrequency = 'monthly' | 'one-time';
+
+export interface LoanParticipant {
+  name: string;
+  avatarStyle?: string;
+}
+
 export interface Loan {
   id: string;
   title: string;
+  bank: string;
   loanType: string;
+  paymentType: PaymentFrequency;
   totalAmount: number;
   outstandingAmount: number;
   interestRate: number;
@@ -51,6 +63,8 @@ export interface Loan {
   nextDueDate: string;
   status: LoanStatus;
   createdAt: number;
+  shareCode?: string;
+  participants?: LoanParticipant[];
 }
 
 export interface BudgetGoal {
@@ -58,6 +72,25 @@ export interface BudgetGoal {
   category: string;
   limitAmount: number;
   period: 'monthly' | 'weekly';
+  createdAt: number;
+}
+
+export interface SavingsGoal {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  color: string;
+  icon: string;
+  createdAt: number;
+}
+
+export interface SavingsActivity {
+  id: string;
+  goalId: string;
+  goalName: string;
+  type: 'deposit' | 'withdraw';
+  amount: number;
   createdAt: number;
 }
 

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { rs } from '../../src/utils/responsive';
 import { useAppStore } from '../../src/store';
 import { DonutChart } from '../../src/components/charts/DonutChart';
 import { SpendingTrendChart } from '../../src/components/charts/SpendingTrendChart';
@@ -11,17 +12,34 @@ import { formatCurrency } from '../../src/utils/formatters';
 import { SpendingByCategory } from '../../src/types';
 
 const { width } = Dimensions.get('window');
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 export default function ChartsScreen() {
   const insets = useSafeAreaInsets();
   const transactions = useAppStore((s) => s.transactions);
 
   const now = new Date();
+  const [selYear, setSelYear] = useState(now.getFullYear());
+  const [selMonth, setSelMonth] = useState(now.getMonth());
+
+  const isCurrentMonth = selYear === now.getFullYear() && selMonth === now.getMonth();
+  const monthLabel = `${MONTHS[selMonth]} ${selYear}`;
+
+  const goPrev = () => {
+    if (selMonth === 0) { setSelYear((y) => y - 1); setSelMonth(11); }
+    else setSelMonth((m) => m - 1);
+  };
+  const goNext = () => {
+    if (isCurrentMonth) return;
+    if (selMonth === 11) { setSelYear((y) => y + 1); setSelMonth(0); }
+    else setSelMonth((m) => m + 1);
+  };
+
   const thisMonthTxns = useMemo(() =>
     transactions.filter((t) => {
       const d = new Date(t.date);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    }), [transactions]);
+      return d.getMonth() === selMonth && d.getFullYear() === selYear;
+    }), [transactions, selMonth, selYear]);
 
   const expenses = useMemo(() => thisMonthTxns.filter((t) => t.type === 'expense'), [thisMonthTxns]);
   const totalSpent = useMemo(() => expenses.reduce((s, t) => s + t.amount, 0), [expenses]);
@@ -43,12 +61,14 @@ export default function ChartsScreen() {
       }));
   }, [expenses, totalSpent]);
 
-  // Last 7 days trend data
+  // Last 7 days (or last 7 days of selected month) trend data
   const trendData = useMemo(() => {
     const days: { label: string; value: number }[] = [];
+    const lastDay = isCurrentMonth
+      ? now.getDate()
+      : new Date(selYear, selMonth + 1, 0).getDate();
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(selYear, selMonth, lastDay - i);
       const dateStr = d.toISOString().split('T')[0];
       const dayTotal = expenses
         .filter((t) => t.date === dateStr)
@@ -59,16 +79,21 @@ export default function ChartsScreen() {
       });
     }
     return days;
-  }, [expenses]);
+  }, [expenses, selYear, selMonth, isCurrentMonth]);
 
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Charts</Text>
-        <TouchableOpacity style={styles.periodBtn}>
-          <Text style={styles.periodText}>This Month</Text>
-          <Ionicons name="chevron-down" size={14} color={Colors.textMedium} />
-        </TouchableOpacity>
+        <View style={styles.monthNav}>
+          <TouchableOpacity onPress={goPrev} style={styles.monthArrow}>
+            <Ionicons name="chevron-back" size={rs(16)} color={Colors.primary} />
+          </TouchableOpacity>
+          <Text style={styles.monthLabel}>{monthLabel}</Text>
+          <TouchableOpacity onPress={goNext} style={[styles.monthArrow, isCurrentMonth && styles.monthArrowDisabled]}>
+            <Ionicons name="chevron-forward" size={rs(16)} color={isCurrentMonth ? Colors.border : Colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 90 + insets.bottom }} showsVerticalScrollIndicator={false}>
@@ -77,7 +102,7 @@ export default function ChartsScreen() {
           <Text style={styles.cardTitle}>Spending Breakdown</Text>
           {spendingByCategory.length === 0 ? (
             <View style={styles.emptyChart}>
-              <Ionicons name="pie-chart-outline" size={48} color={Colors.textLight} />
+              <Ionicons name="pie-chart-outline" size={rs(48)} color={Colors.textLight} />
               <Text style={styles.emptyText}>No expenses this month</Text>
             </View>
           ) : (
@@ -89,10 +114,10 @@ export default function ChartsScreen() {
                 strokeWidth={30}
               />
               <View style={styles.legend}>
-                {spendingByCategory.slice(0, 6).map((item) => {
+                {spendingByCategory.slice(0, 6).map((item, idx) => {
                   const cat = getCategoryById(item.category);
                   return (
-                    <View key={item.category} style={styles.legendItem}>
+                    <View key={`${item.category}-${idx}`} style={styles.legendItem}>
                       <View style={[styles.legendDot, { backgroundColor: item.color }]} />
                       <View style={styles.legendInfo}>
                         <Text style={styles.legendName} numberOfLines={1}>{cat.name}</Text>
@@ -110,10 +135,10 @@ export default function ChartsScreen() {
         {/* Spending Trend */}
         <View style={[styles.card, { marginTop: 16 }]}>
           <Text style={styles.cardTitle}>Spending Trend</Text>
-          <Text style={styles.cardSubtitle}>Last 7 days</Text>
+          <Text style={styles.cardSubtitle}>{isCurrentMonth ? 'Last 7 days' : `Last 7 days of ${monthLabel}`}</Text>
           {trendData.every((d) => d.value === 0) ? (
             <View style={styles.emptyChart}>
-              <Ionicons name="trending-up-outline" size={48} color={Colors.textLight} />
+              <Ionicons name="trending-up-outline" size={rs(48)} color={Colors.textLight} />
               <Text style={styles.emptyText}>No spending data</Text>
             </View>
           ) : (
@@ -135,7 +160,7 @@ export default function ChartsScreen() {
             ].map((stat) => (
               <View key={stat.label} style={styles.statCard}>
                 <View style={[styles.statIcon, { backgroundColor: stat.color + '20' }]}>
-                  <Ionicons name={stat.icon as any} size={18} color={stat.color} />
+                  <Ionicons name={stat.icon as any} size={rs(18)} color={stat.color} />
                 </View>
                 <Text style={styles.statValue} numberOfLines={1}>{stat.value}</Text>
                 <Text style={styles.statLabel}>{stat.label}</Text>
@@ -157,19 +182,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 12,
   },
-  title: { fontSize: 24, fontWeight: '800', color: '#1A0E00' },
-  periodBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#FFF8F1',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#F0DCC8',
-  },
-  periodText: { fontSize: 13, color: '#8B6F47', fontWeight: '500' },
+  title: { fontSize: rs(24), fontFamily: 'Cause-ExtraBold', color: '#1A0E00' },
+  monthNav: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#FFF8F1', borderRadius: 10, borderWidth: 1, borderColor: '#F0DCC8', paddingHorizontal: 4, paddingVertical: 2 },
+  monthArrow: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
+  monthArrowDisabled: { opacity: 0.3 },
+  monthLabel: { fontSize: rs(13), fontFamily: 'Cause-SemiBold', color: '#8B6F47', minWidth: 72, textAlign: 'center' },
   card: {
     marginHorizontal: 20,
     backgroundColor: '#FFFFFF',
@@ -181,18 +198,18 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  cardTitle: { fontSize: 16, fontWeight: '700', color: '#1A0E00', marginBottom: 4 },
-  cardSubtitle: { fontSize: 12, color: '#C4A882' },
+  cardTitle: { fontSize: rs(16), fontFamily: 'Cause-Bold', color: '#1A0E00', marginBottom: 4 },
+  cardSubtitle: { fontSize: rs(12), color: '#C4A882' },
   donutRow: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 12 },
   legend: { flex: 1, gap: 8 },
   legendItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   legendDot: { width: 10, height: 10, borderRadius: 5, marginTop: 3 },
   legendInfo: { flex: 1 },
-  legendName: { fontSize: 11, fontWeight: '600', color: '#1A0E00' },
-  legendAmount: { fontSize: 11, color: '#8B6F47' },
-  legendPct: { fontSize: 10, color: '#C4A882' },
+  legendName: { fontSize: rs(11), fontFamily: 'Cause-SemiBold', color: '#1A0E00' },
+  legendAmount: { fontSize: rs(11), color: '#8B6F47' },
+  legendPct: { fontSize: rs(10), color: '#C4A882' },
   emptyChart: { alignItems: 'center', paddingVertical: 32 },
-  emptyText: { color: '#C4A882', marginTop: 8, fontSize: 13 },
+  emptyText: { color: '#C4A882', marginTop: 8, fontSize: rs(13) },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 12 },
   statCard: {
     flex: 1,
@@ -202,7 +219,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'flex-start',
   },
-  statIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  statValue: { fontSize: 16, fontWeight: '800', color: '#1A0E00', marginBottom: 2 },
-  statLabel: { fontSize: 11, color: '#C4A882' },
+  statIcon: { width: rs(36), height: rs(36), borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  statValue: { fontSize: rs(16), fontFamily: 'Cause-ExtraBold', color: '#1A0E00', marginBottom: 2 },
+  statLabel: { fontSize: rs(11), color: '#C4A882' },
 });

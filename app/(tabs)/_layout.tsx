@@ -6,11 +6,11 @@ import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TAB_ICON: Record<string, string> = {
-  index: 'home',
-  transactions: 'list',
-  charts: 'bar-chart',
-  cards: 'card',
-  more: 'ellipsis-horizontal',
+  index: 'grid',
+  transactions: 'receipt',
+  charts: 'stats-chart',
+  cards: 'wallet',
+  more: 'apps',
 };
 
 const TAB_LABEL: Record<string, string> = {
@@ -45,7 +45,7 @@ export default function TabLayout() {
         },
         tabBarActiveTintColor: Colors.navActive,
         tabBarInactiveTintColor: Colors.navInactive,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginBottom: 4 },
+        tabBarLabelStyle: { fontSize: 10, fontFamily: 'Cause-SemiBold', marginBottom: 4 },
         tabBarItemStyle: { paddingTop: 8 },
         tabBarIcon: ({ color, focused }) => (
           <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>

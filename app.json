@@ -4,22 +4,25 @@
     "slug": "pesonest",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "pesonest",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FDF1E7",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#FDF1E7"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.pesonest.app"
+      "bundleIdentifier": "com.pesonest.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "PesoNest needs camera access to scan QR codes for joint loans."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/app-icon.png",
         "backgroundColor": "#FDF1E7"
       },
       "package": "com.pesonest.app"
@@ -28,10 +31,14 @@
       "expo-router",
       "expo-sqlite",
       [
+        "expo-camera",
+        { "cameraPermission": "PesoNest needs camera access to scan QR codes." }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#FDF1E7",
-          "image": "./assets/splash.png",
+          "image": "./assets/images/app-icon.png",
           "resizeMode": "contain"
         }
       ]

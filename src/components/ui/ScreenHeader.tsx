@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: 'Cause-Bold',
     color: Colors.textDark,
   },
   subtitle: {

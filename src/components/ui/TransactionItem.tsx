@@ -9,9 +9,10 @@ interface TransactionItemProps {
   transaction: Transaction;
   onPress?: () => void;
   onLongPress?: () => void;
+  hideBalance?: boolean;
 }
 
-export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onPress, onLongPress }) => {
+export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onPress, onLongPress, hideBalance }) => {
   const category = getCategoryById(transaction.category);
   const isIncome = transaction.type === 'income';
   const amountColor = isIncome ? Colors.income : Colors.expense;
@@ -32,7 +33,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
         <Text style={styles.date}>{formatDate(transaction.date)}</Text>
       </View>
       <Text style={[styles.amount, { color: amountColor }]}>
-        {amountPrefix}₱{transaction.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+        {hideBalance ? '••••••' : `${amountPrefix}₱${transaction.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
       </Text>
     </TouchableOpacity>
   );
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: 'Cause-SemiBold',
     color: Colors.textDark,
     marginBottom: 2,
   },
@@ -76,6 +77,6 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: 'Cause-Bold',
   },
 });

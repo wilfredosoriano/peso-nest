@@ -11,6 +11,7 @@ import { AddTransactionModal } from '../../src/components/ui/AddTransactionModal
 import { Colors } from '../../src/constants/Colors';
 import { groupTransactionsByDate } from '../../src/utils/formatters';
 import { TransactionType } from '../../src/types';
+import { rs } from '../../src/utils/responsive';
 
 type Filter = 'all' | TransactionType;
 
@@ -18,8 +19,10 @@ export default function TransactionsScreen() {
   const insets = useSafeAreaInsets();
   const transactions = useAppStore((s) => s.transactions);
   const removeTransaction = useAppStore((s) => s.removeTransaction);
+  const hideBalance = useAppStore((s) => s.hideBalance);
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
 
   const filtered = useMemo(() => {
@@ -47,14 +50,35 @@ export default function TransactionsScreen() {
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Transactions</Text>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Ionicons name="search-outline" size={22} color={Colors.textDark} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Ionicons name="filter-outline" size={22} color={Colors.textDark} />
+          <TouchableOpacity
+            style={[styles.iconBtn, showSearch && styles.iconBtnActive]}
+            onPress={() => { setShowSearch((v) => !v); if (showSearch) setSearch(''); }}
+          >
+            <Ionicons name={showSearch ? 'close' : 'search-outline'} size={rs(22)} color={showSearch ? '#fff' : Colors.textDark} />
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Search bar */}
+      {showSearch && (
+        <View style={styles.searchBar}>
+          <Ionicons name="search-outline" size={rs(16)} color={Colors.textLight} />
+          <TextInput
+            style={styles.searchInput}
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search transactions…"
+            placeholderTextColor={Colors.textLight}
+            autoFocus
+            returnKeyType="search"
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Ionicons name="close-circle" size={rs(16)} color={Colors.textLight} />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Filter tabs */}
       <View style={styles.filterRow}>
@@ -77,7 +101,7 @@ export default function TransactionsScreen() {
       >
         {grouped.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="receipt-outline" size={56} color={Colors.textLight} />
+            <Ionicons name="receipt-outline" size={rs(56)} color={Colors.textLight} />
             <Text style={styles.emptyTitle}>No transactions found</Text>
             <Text style={styles.emptySubtitle}>Tap + to add your first transaction</Text>
           </View>
@@ -90,6 +114,7 @@ export default function TransactionsScreen() {
                   key={tx.id}
                   transaction={tx}
                   onLongPress={() => handleLongPress(tx.id)}
+                  hideBalance={hideBalance}
                 />
               ))}
             </View>
@@ -103,7 +128,7 @@ export default function TransactionsScreen() {
         onPress={() => setShowAdd(true)}
       >
         <View style={styles.fabInner}>
-          <Ionicons name="add" size={28} color="#fff" />
+          <Ionicons name="add" size={rs(28)} color="#fff" />
         </View>
       </TouchableOpacity>
 
@@ -125,8 +150,8 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: rs(24),
+    fontFamily: 'Cause-ExtraBold',
     color: Colors.textDark,
   },
   headerRight: {
@@ -134,8 +159,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   iconBtn: {
-    width: 38,
-    height: 38,
+    width: rs(38),
+    height: rs(38),
     borderRadius: 12,
     backgroundColor: Colors.card,
     alignItems: 'center',
@@ -145,6 +170,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  iconBtnActive: {
+    backgroundColor: Colors.primary,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: rs(14),
+    color: Colors.textDark,
   },
   filterRow: {
     flexDirection: 'row',
@@ -170,8 +216,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   filterTabText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: rs(13),
+    fontFamily: 'Cause-SemiBold',
     color: Colors.textMedium,
   },
   filterTabTextActive: {
@@ -181,8 +227,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   groupLabel: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: rs(13),
+    fontFamily: 'Cause-Bold',
     color: Colors.textMedium,
     marginBottom: 8,
     marginTop: 4,
@@ -192,13 +238,13 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: rs(16),
+    fontFamily: 'Cause-Bold',
     color: Colors.textMedium,
     marginTop: 12,
   },
   emptySubtitle: {
-    fontSize: 13,
+    fontSize: rs(13),
     color: Colors.textLight,
     marginTop: 4,
   },
@@ -212,8 +258,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   fabInner: {
-    width: 56,
-    height: 56,
+    width: rs(56),
+    height: rs(56),
     borderRadius: 28,
     backgroundColor: Colors.primary,
     alignItems: 'center',

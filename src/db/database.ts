@@ -59,7 +59,9 @@ const initializeDatabase = async (database: SQLite.SQLiteDatabase): Promise<void
     CREATE TABLE IF NOT EXISTS loans (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
+      bank TEXT DEFAULT '',
       loan_type TEXT NOT NULL,
+      payment_type TEXT DEFAULT 'monthly',
       total_amount REAL NOT NULL,
       outstanding_amount REAL NOT NULL,
       interest_rate REAL NOT NULL,
@@ -76,53 +78,184 @@ const initializeDatabase = async (database: SQLite.SQLiteDatabase): Promise<void
       period TEXT DEFAULT 'monthly',
       created_at INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      target_amount REAL NOT NULL,
+      current_amount REAL DEFAULT 0,
+      color TEXT DEFAULT '#4CAF50',
+      icon TEXT DEFAULT 'wallet',
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS savings_activity (
+      id TEXT PRIMARY KEY,
+      goal_id TEXT NOT NULL,
+      goal_name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      amount REAL NOT NULL,
+      created_at INTEGER NOT NULL
+    );
   `);
 
-  // Seed default user if none — INSERT OR IGNORE guards against any duplicate attempts
+  // Migrations — .catch(() => {}) silently skips if the column already exists
+
+  // transactions
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN type TEXT DEFAULT 'expense'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN amount REAL DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN category TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN description TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN date TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN card_id TEXT`).catch(() => {});
+  await database.execAsync(`ALTER TABLE transactions ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+
+  // cards
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN name TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN bank TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN type TEXT DEFAULT 'debit'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN last_four TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN expiry TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN card_holder TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN limit_amount REAL DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN balance REAL DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN color_start TEXT DEFAULT '#E97B3B'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN color_end TEXT DEFAULT '#C9621E'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN network TEXT DEFAULT 'visa'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE cards ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+
+  // loans
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN bank TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN payment_type TEXT DEFAULT 'monthly'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN share_code TEXT`).catch(() => {});
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN pending_sync INTEGER DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE loans ADD COLUMN participants TEXT`).catch(() => {});
+
+  // budget_goals
+  await database.execAsync(`ALTER TABLE budget_goals ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+
+  // savings_goals — ensure table exists for users upgrading from older installs
+  await database.execAsync(`
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      target_amount REAL NOT NULL,
+      current_amount REAL DEFAULT 0,
+      color TEXT DEFAULT '#4CAF50',
+      icon TEXT DEFAULT 'wallet',
+      created_at INTEGER NOT NULL
+    )
+  `).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN name TEXT DEFAULT ''`).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN target_amount REAL DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN current_amount REAL DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN color TEXT DEFAULT '#4CAF50'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN icon TEXT DEFAULT 'wallet'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE savings_goals ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+
+  // savings_activity — safe create for existing installs
+  await database.execAsync(`
+    CREATE TABLE IF NOT EXISTS savings_activity (
+      id TEXT PRIMARY KEY,
+      goal_id TEXT NOT NULL,
+      goal_name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      amount REAL NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `).catch(() => {});
+
+  // users
+  await database.execAsync(`ALTER TABLE users ADD COLUMN avatar_color TEXT DEFAULT '#E97B3B'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN currency TEXT DEFAULT 'PHP'`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN monthly_budget REAL DEFAULT 10000`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN is_premium INTEGER DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN created_at INTEGER DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN avatar_style TEXT`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN notifications_enabled INTEGER DEFAULT 0`).catch(() => {});
+  await database.execAsync(`ALTER TABLE users ADD COLUMN notifications_days_before INTEGER DEFAULT 1`).catch(() => {});
+
+  // Version migrations — drop & recreate tables that may have incompatible old schemas
+  const versionRow = await database.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  const dbVersion = versionRow?.user_version ?? 0;
+
+  if (dbVersion < 3) {
+    // Drops tables with potentially stale columns (e.g. walletId NOT NULL from old schema)
+    // then recreates them with the current schema. Safe because data was already wiped in v2,
+    // and any pre-v2 install hasn't entered real data yet.
+    await database.execAsync(`
+      DROP TABLE IF EXISTS transactions;
+      DROP TABLE IF EXISTS cards;
+      DROP TABLE IF EXISTS loans;
+
+      CREATE TABLE transactions (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        amount REAL NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT NOT NULL,
+        date TEXT NOT NULL,
+        card_id TEXT,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE cards (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        bank TEXT NOT NULL,
+        type TEXT NOT NULL,
+        last_four TEXT DEFAULT '',
+        expiry TEXT DEFAULT '',
+        card_holder TEXT DEFAULT '',
+        limit_amount REAL DEFAULT 0,
+        balance REAL DEFAULT 0,
+        color_start TEXT DEFAULT '#E97B3B',
+        color_end TEXT DEFAULT '#C9621E',
+        network TEXT DEFAULT 'visa',
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE loans (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        bank TEXT DEFAULT '',
+        loan_type TEXT NOT NULL,
+        payment_type TEXT DEFAULT 'monthly',
+        total_amount REAL NOT NULL,
+        outstanding_amount REAL NOT NULL,
+        interest_rate REAL NOT NULL,
+        emi_amount REAL NOT NULL,
+        next_due_date TEXT NOT NULL,
+        status TEXT DEFAULT 'active',
+        created_at INTEGER NOT NULL,
+        share_code TEXT
+      );
+    `);
+    await database.execAsync('PRAGMA user_version = 3');
+  }
+
+  if (dbVersion < 4) {
+    // Recreate savings_goals to fix any devices that got a stale schema
+    // (e.g. 'title' column from an earlier version)
+    await database.execAsync(`
+      DROP TABLE IF EXISTS savings_goals;
+      CREATE TABLE savings_goals (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        target_amount REAL NOT NULL,
+        current_amount REAL DEFAULT 0,
+        color TEXT DEFAULT '#4CAF50',
+        icon TEXT DEFAULT 'wallet',
+        created_at INTEGER NOT NULL
+      );
+    `);
+    await database.execAsync('PRAGMA user_version = 4');
+  }
+
+  // Seed default user if none
   await database.runAsync(
     'INSERT OR IGNORE INTO users (id, name, avatar_color, currency, monthly_budget, is_premium, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    ['user_1', 'Hana', '#E97B3B', 'PHP', 10000, 0, Date.now()]
-  );
-  const txCount = await database.getFirstAsync<{ n: number }>('SELECT COUNT(*) as n FROM transactions');
-  if (!txCount || txCount.n === 0) {
-    await seedSampleData(database);
-  }
-};
-
-const seedSampleData = async (database: SQLite.SQLiteDatabase): Promise<void> => {
-  const today = new Date();
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
-  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
-  const twoDaysAgo = new Date(today); twoDaysAgo.setDate(today.getDate() - 2);
-
-  const txns = [
-    ['tx_1', 'income', 28000, 'salary', 'Salary', fmt(today), null, Date.now() - 7000],
-    ['tx_2', 'expense', 125, 'food_dining', 'Lunch', fmt(today), null, Date.now() - 6000],
-    ['tx_3', 'expense', 27.5, 'transport', 'Transport', fmt(today), null, Date.now() - 5000],
-    ['tx_4', 'expense', 249, 'education', 'Book Store', fmt(yesterday), null, Date.now() - 4000],
-    ['tx_5', 'expense', 682, 'groceries', 'Groceries', fmt(yesterday), null, Date.now() - 3000],
-    ['tx_6', 'expense', 453, 'shopping', 'Online Shopping', fmt(twoDaysAgo), null, Date.now() - 2000],
-    ['tx_7', 'expense', 45, 'coffee', 'Coffee Shop', fmt(twoDaysAgo), null, Date.now() - 1000],
-  ];
-
-  for (const tx of txns) {
-    await database.runAsync(
-      'INSERT OR IGNORE INTO transactions (id, type, amount, category, description, date, card_id, created_at) VALUES (?,?,?,?,?,?,?,?)',
-      tx as any
-    );
-  }
-
-  await database.runAsync(
-    'INSERT OR IGNORE INTO cards (id, name, bank, type, last_four, expiry, card_holder, limit_amount, balance, color_start, color_end, network, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    ['card_1', 'Sunshine Bank Debit Card', 'Sunshine Bank', 'debit', '5678', '08/27', 'HANA Y.', 50000, 24507.5, '#E97B3B', '#C9621E', 'mastercard', Date.now()]
-  );
-  await database.runAsync(
-    'INSERT OR IGNORE INTO cards (id, name, bank, type, last_four, expiry, card_holder, limit_amount, balance, color_start, color_end, network, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    ['card_2', 'Sunshine Bank Credit Card', 'Sunshine Bank', 'credit', '9876', '11/28', 'HANA Y.', 50000, 15605, '#4ECDC4', '#44A8C8', 'visa', Date.now()]
-  );
-
-  await database.runAsync(
-    'INSERT OR IGNORE INTO loans (id, title, loan_type, total_amount, outstanding_amount, interest_rate, emi_amount, next_due_date, status, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
-    ['loan_1', 'Personal Loan', 'personal', 60000, 42500, 8.5, 2100, '2025-05-10', 'active', Date.now()]
+    ['user_1', '', '#E97B3B', 'PHP', 10000, 0, Date.now()]
   );
 };

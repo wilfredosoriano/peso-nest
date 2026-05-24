@@ -37,13 +37,6 @@ export default function WelcomeScreen() {
 
       {/* Overlay content pinned to bottom */}
       <Animated.View style={[styles.content, { opacity: fadeIn, paddingBottom: insets.bottom + 48 }]}>
-        {/* Logo */}
-        <View style={styles.logoWrap}>
-          <LinearGradient colors={[Colors.primary, Colors.primaryDark]} style={styles.logo}>
-            <Text style={styles.logoIcon}>🌿</Text>
-          </LinearGradient>
-        </View>
-
         <Text style={styles.appName}>PesoNest</Text>
         <Text style={styles.tagline}>Track your expenses,{'\n'}Plan your future.</Text>
 
@@ -70,27 +63,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
-  logoWrap: {
-    marginBottom: 16,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  logo: {
-    width: 76,
-    height: 76,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: {
-    fontSize: 36,
-  },
   appName: {
     fontSize: 34,
-    fontWeight: '800',
+    fontFamily: 'Cause-ExtraBold',
     color: '#FFFFFF',
     letterSpacing: 0.5,
     marginBottom: 8,
