@@ -3,13 +3,16 @@ const path = require('path');
 
 const config = getDefaultConfig(__dirname);
 
-// Supabase pulls in @opentelemetry which uses dynamic import() — Hermes can't
-// handle it in release builds. Redirect the whole package to an empty shim.
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName.startsWith('@opentelemetry/')) {
+  // Supabase's ESM build uses dynamic import(variable) which Hermes can't
+  // handle in release builds. Force the CJS build instead.
+  if (moduleName === '@supabase/supabase-js') {
     return {
       type: 'sourceFile',
-      filePath: path.resolve(__dirname, 'src/shims/opentelemetry.js'),
+      filePath: path.resolve(
+        __dirname,
+        'node_modules/@supabase/supabase-js/dist/index.cjs'
+      ),
     };
   }
   return context.resolveRequest(context, moduleName, platform);
