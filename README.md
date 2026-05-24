@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/images/app-branding.png" width="100" alt="PesoNest Logo" />
+  <img src="./assets/images/app-branding.png" width="200" alt="PesoNest Logo" />
 </p>
 
 <h1 align="center">PesoNest</h1>
