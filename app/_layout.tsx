@@ -36,6 +36,17 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    let splashHidden = false;
+    const hideSplash = async () => {
+      if (!splashHidden) {
+        splashHidden = true;
+        await SplashScreen.hideAsync();
+      }
+    };
+
+    // Safety net — never stay stuck on splash longer than 6 seconds
+    const timeout = setTimeout(hideSplash, 6000);
+
     const init = async () => {
       try {
         await Font.loadAsync({
@@ -62,12 +73,13 @@ export default function RootLayout() {
         ]);
         initializePurchases();
         // Sync RevenueCat premium status with local DB
-        const isPremiumRC = await checkPremiumEntitlement();
+        const isPremiumRC = await checkPremiumEntitlement().catch(() => false);
         if (isPremiumRC) {
           await useAppStore.getState().updateUser({ isPremium: true });
         }
       } finally {
-        await SplashScreen.hideAsync();
+        clearTimeout(timeout);
+        await hideSplash();
       }
     };
     init();
