@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Use — PesoNest</title>
+  <link rel="icon" type="image/png" href="./app-icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #FDF1E7;
+      color: #1A0E00;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #F0DCC8;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    header .brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: #E97B3B;
+      letter-spacing: -0.3px;
+    }
+
+    header nav {
+      margin-left: auto;
+      display: flex;
+      gap: 20px;
+    }
+
+    header nav a {
+      font-size: 14px;
+      color: #8B6F47;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    header nav a:hover { color: #E97B3B; }
+
+    .hero {
+      background: linear-gradient(135deg, #1A0E00 0%, #4A3728 100%);
+      color: #ffffff;
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+
+    .hero img {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 15px;
+      opacity: 0.82;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.65;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .section {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      border: 1px solid #F0DCC8;
+      box-shadow: 0 2px 8px rgba(233,123,59,0.06);
+    }
+
+    .section h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1A0E00;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F0DCC8;
+    }
+
+    .section h2 .num {
+      background: #E97B3B;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section p {
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: #4A3728;
+      margin-bottom: 12px;
+    }
+
+    .section p:last-child { margin-bottom: 0; }
+
+    .section ul {
+      padding-left: 20px;
+      margin: 8px 0 12px;
+    }
+
+    .section ul li {
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: #4A3728;
+      margin-bottom: 4px;
+    }
+
+    .highlight-box {
+      background: #FDF1E7;
+      border-left: 3px solid #E97B3B;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #4A3728;
+      line-height: 1.7;
+    }
+
+    .warning-box {
+      background: #FFF8F5;
+      border-left: 3px solid #E84040;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #4A3728;
+      line-height: 1.7;
+    }
+
+    .contact-box {
+      background: linear-gradient(135deg, #FDF1E7, #fff);
+      border: 1px solid #F0DCC8;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .contact-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1A0E00;
+      margin-bottom: 10px;
+    }
+
+    .contact-box p {
+      font-size: 14.5px;
+      color: #8B6F47;
+      margin-bottom: 18px;
+      line-height: 1.7;
+    }
+
+    .contact-box a {
+      display: inline-block;
+      background: #1A0E00;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .contact-box a:hover { opacity: 0.75; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+      color: #C4A882;
+      border-top: 1px solid #F0DCC8;
+    }
+
+    footer a { color: #E97B3B; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 26px; }
+      .section { padding: 22px 20px; }
+      header nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="./app-icon.png" alt="PesoNest" />
+    <span class="brand">PesoNest</span>
+    <nav>
+      <a href="./privacy-policy.html">Privacy Policy</a>
+      <a href="./terms.html">Terms of Use</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <img src="./app-icon.png" alt="PesoNest Icon" />
+    <h1>Terms of Use</h1>
+    <p>I tried to write these the way I'd want to read them — short, plain, and honest. No unnecessary legal filler.</p>
+    <div class="meta">
+      <span>📅 Last updated: May 2026</span>
+      <span>🇵🇭 Applicable in the Philippines</span>
+    </div>
+  </div>
+
+  <main>
+
+    <div class="section">
+      <h2><span class="num">1</span> Who made this app</h2>
+      <p>Hi — I'm Wilfredo, the only person behind PesoNest. I designed it, built it, and maintain it on my own. I'm based in the Philippines and I made this app for Filipinos who want a simple, honest way to track their money.</p>
+      <p>By using PesoNest, you're agreeing to these terms. I kept them short on purpose — I don't think anyone should have to wade through 20 pages of fine print just to use a budgeting app.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">2</span> What PesoNest is — and isn't</h2>
+      <p>PesoNest is a personal finance tracker. You enter your transactions, cards, and loans manually, and the app helps you see where your money is going.</p>
+      <p>It is not a bank. It's not connected to any financial institution. It doesn't pull live data from your accounts. The numbers you see are only as accurate as what you put in — so if you forget to log an expense, PesoNest won't know either.</p>
+      <div class="highlight-box">
+        Think of it like a digital notebook for your finances. I built the notebook — you fill it in.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">3</span> Your data, your responsibility</h2>
+      <p>I can't verify whether what you enter is accurate, and I don't try to. If you log ₱5,000 when you spent ₱50,000, PesoNest will show you ₱5,000 — it has no way to know otherwise.</p>
+      <p>A few things I'd ask you to keep in mind:</p>
+      <ul>
+        <li>Double-check your entries, especially for loans and large transactions</li>
+        <li>Keep your phone secure — anyone who picks it up can open the app</li>
+        <li>If you use the Joint Loan feature, only share the QR code with someone you actually trust</li>
+        <li>Back up your data regularly using the export feature in Settings</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">4</span> This isn't financial advice</h2>
+      <p>I'm a developer, not a financial advisor. PesoNest can show you how much you've been spending on food, or how many months until your loan is paid off — but it can't tell you whether you should take out that loan in the first place, or how to invest your savings.</p>
+      <p>For decisions that actually matter — big loans, investments, tax stuff — please talk to someone qualified. Use PesoNest to stay organized, not as the final word on your finances.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">5</span> Premium</h2>
+      <p>Some features — like exporting your full data backup or downloading a CSV of your transactions — require a Premium subscription. Here's how it works in practice:</p>
+      <ul>
+        <li>You subscribe through the App Store or Google Play, not directly through me</li>
+        <li>It renews automatically until you cancel — you can do that anytime in your Apple or Google account settings</li>
+        <li>Refunds go through Apple or Google. I don't handle billing on my end.</li>
+      </ul>
+      <p>Premium is a fair trade — you pay once a year, you get the full app. I keep the lights on.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">6</span> Joint Loans</h2>
+      <p>This feature lets two people link the same loan record so both phones stay in sync. I'm proud of how it works, but there are a few things worth knowing before you use it.</p>
+      <p>When you generate a QR code, PesoNest stores the loan data on a server temporarily. Once the other person scans it, you're linked — they'll see updates when you make a payment, and vice versa. There's no way to unlink after someone claims the code, so be sure about who you're sharing it with.</p>
+      <p>The QR code is single-use. After it's scanned, it's done.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">7</span> Device Transfer</h2>
+      <p>Getting a new phone? Device Transfer is there for that. It generates a 6-character code that holds your data for 24 hours on a server, encrypted. Your new phone enters the code, pulls the data, and the server copy is deleted.</p>
+      <p>Don't share that code with anyone during the window — whoever enters it first gets the data.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">8</span> The app and everything in it is mine</h2>
+      <p>The design, the code, the name PesoNest, the icons — I made all of it. Please don't copy or redistribute any part of it without asking me first. I'm not unreasonable about collaborations, but I do want to know about them.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">9</span> If something goes wrong</h2>
+      <p>I put real effort into making PesoNest reliable, but I'm one person and phones are unpredictable. If your device gets wiped, the app crashes, or something unexpected happens — I can't recover data that only existed on your phone.</p>
+      <div class="warning-box">
+        Please export a backup from time to time. Settings → Export Data → JSON. It takes less than a minute and could save you from losing months of records.
+      </div>
+      <p style="margin-top: 14px;">To be clear: I'm not liable for data loss, or for any financial decisions you make using the app. PesoNest is a tool — how you use it is up to you.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">10</span> Deleting the app</h2>
+      <p>If you uninstall PesoNest, everything stored locally goes with it. There's no cloud backup I can restore for you. Export your data first if you think you might want it later.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">11</span> If I update these terms</h2>
+      <p>If I ever need to change something here, I'll flag it inside the app before it takes effect. I won't just silently swap the page and hope nobody notices — that's not how I want to run this.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">12</span> Philippine law</h2>
+      <p>PesoNest was made in the Philippines, for Filipinos. These terms follow Philippine law. If there's ever a dispute, it'd be handled in Philippine courts.</p>
+    </div>
+
+    <div class="contact-box">
+      <h3>Something on your mind?</h3>
+      <p>I'm reachable. If a term here bothers you, if something's unclear, or you just have a question — send me a message. I read everything.</p>
+      <a href="mailto:wilfredojrsoriano@gmail.com">Email me directly</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>© 2026 PesoNest · Wilfredo Soriano · All rights reserved</p>
+    <p style="margin-top: 8px;">
+      <a href="./privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp;
+      <a href="./terms.html">Terms of Use</a>
+    </p>
+  </footer>
+
+</body>
+</html>
