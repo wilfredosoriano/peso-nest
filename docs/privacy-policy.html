@@ -4,306 +4,265 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy — PesoNest</title>
-  <link rel="icon" type="image/png" href="./app-icon.png" />
+  <link rel="icon" type="image/png" href="./app-branding.png" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #FDF1E7;
-      color: #1A0E00;
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      color: #1a1a1a;
+      line-height: 1.7;
     }
 
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid #F0DCC8;
-      padding: 20px 24px;
+    nav {
+      padding: 20px 32px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      gap: 12px;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+    nav img {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
     }
 
-    header .brand {
-      font-size: 18px;
+    nav .name {
+      font-size: 15px;
       font-weight: 700;
       color: #E97B3B;
-      letter-spacing: -0.3px;
     }
 
-    header nav {
+    nav .links {
       margin-left: auto;
       display: flex;
-      gap: 20px;
+      gap: 24px;
     }
 
-    header nav a {
-      font-size: 14px;
-      color: #8B6F47;
+    nav .links a {
+      font-size: 13px;
+      color: #888;
       text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
     }
 
-    header nav a:hover { color: #E97B3B; }
+    nav .links a:hover { color: #E97B3B; }
 
-    .hero {
-      background: linear-gradient(135deg, #E97B3B 0%, #F5A96B 100%);
-      color: #ffffff;
-      padding: 60px 24px 48px;
-      text-align: center;
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 64px 32px 100px;
     }
 
-    .hero img {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    .label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #E97B3B;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 12px;
     }
 
-    .hero h1 {
+    h1 {
       font-size: 32px;
       font-weight: 800;
+      color: #1a1a1a;
       letter-spacing: -0.5px;
       margin-bottom: 10px;
     }
 
-    .hero p {
-      font-size: 15px;
-      opacity: 0.92;
-      max-width: 500px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
     .meta {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-top: 20px;
       font-size: 13px;
-      opacity: 0.85;
+      color: #aaa;
+      margin-bottom: 56px;
     }
 
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
+    .block {
+      margin-bottom: 40px;
     }
 
-    .section {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 28px 32px;
-      margin-bottom: 20px;
-      border: 1px solid #F0DCC8;
-      box-shadow: 0 2px 8px rgba(233,123,59,0.06);
-    }
-
-    .section h2 {
-      font-size: 17px;
+    .block h2 {
+      font-size: 15px;
       font-weight: 700;
-      color: #E97B3B;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section p {
-      font-size: 14.5px;
-      line-height: 1.8;
-      color: #4A3728;
-      margin-bottom: 12px;
-    }
-
-    .section p:last-child { margin-bottom: 0; }
-
-    .section ul {
-      padding-left: 20px;
-      margin: 8px 0 12px;
-    }
-
-    .section ul li {
-      font-size: 14.5px;
-      line-height: 1.8;
-      color: #4A3728;
-      margin-bottom: 4px;
-    }
-
-    .highlight-box {
-      background: #FDF1E7;
-      border-left: 3px solid #E97B3B;
-      border-radius: 0 12px 12px 0;
-      padding: 14px 18px;
-      margin-top: 14px;
-      font-size: 14px;
-      color: #4A3728;
-      line-height: 1.7;
-    }
-
-    .contact-box {
-      background: linear-gradient(135deg, #FDF1E7, #fff);
-      border: 1px solid #F0DCC8;
-      border-radius: 16px;
-      padding: 32px;
-      text-align: center;
-      margin-top: 32px;
-    }
-
-    .contact-box h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1A0E00;
+      color: #1a1a1a;
       margin-bottom: 10px;
     }
 
-    .contact-box p {
-      font-size: 14.5px;
-      color: #8B6F47;
-      margin-bottom: 18px;
-      line-height: 1.7;
+    .block p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
     }
 
-    .contact-box a {
+    .block p:last-child { margin-bottom: 0; }
+
+    .block ul {
+      padding-left: 18px;
+      margin-top: 8px;
+    }
+
+    .block ul li {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .callout {
+      background: #FDF1E7;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 14px;
+      color: #4a3728;
+      margin-top: 12px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 40px 0;
+    }
+
+    .contact {
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .contact p {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    .contact a {
       display: inline-block;
       background: #E97B3B;
       color: #fff;
       text-decoration: none;
-      padding: 12px 28px;
-      border-radius: 12px;
-      font-size: 14px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
-      transition: opacity 0.2s;
     }
-
-    .contact-box a:hover { opacity: 0.85; }
 
     footer {
       text-align: center;
-      padding: 32px 24px;
-      font-size: 13px;
-      color: #C4A882;
-      border-top: 1px solid #F0DCC8;
+      padding: 32px;
+      font-size: 12px;
+      color: #ccc;
+      border-top: 1px solid #f0f0f0;
     }
 
     footer a { color: #E97B3B; text-decoration: none; }
 
     @media (max-width: 600px) {
-      .hero h1 { font-size: 26px; }
-      .section { padding: 22px 20px; }
-      header nav { display: none; }
+      .page { padding: 40px 20px 80px; }
+      h1 { font-size: 26px; }
+      nav { padding: 16px 20px; }
+      nav .links { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <img src="./app-icon.png" alt="PesoNest" />
-    <span class="brand">PesoNest</span>
-    <nav>
+  <nav>
+    <img src="./app-branding.png" alt="PesoNest" />
+    <span class="name">PesoNest</span>
+    <div class="links">
       <a href="./privacy-policy.html">Privacy Policy</a>
       <a href="./terms.html">Terms of Use</a>
-    </nav>
-  </header>
+    </div>
+  </nav>
 
-  <div class="hero">
-    <img src="./app-icon.png" alt="PesoNest Icon" />
+  <div class="page">
+
+    <p class="label">Legal</p>
     <h1>Privacy Policy</h1>
-    <p>I wrote this myself — no legal copy-paste. Your financial life is private, and I want you to know exactly how PesoNest treats it.</p>
-    <div class="meta">
-      <span>📅 Last updated: May 2026</span>
-      <span>🇵🇭 Made for Filipinos</span>
-    </div>
-  </div>
+    <p class="meta">Last updated: May 2026</p>
 
-  <main>
-
-    <div class="section">
-      <h2>🙋 A quick note from me</h2>
+    <div class="block">
+      <h2>A quick note from me</h2>
       <p>I'm Wilfredo, the solo developer behind PesoNest. I built this app because I personally needed a simple way to track my finances in pesos — and I couldn't find one that felt right.</p>
-      <p>One thing I was very intentional about from the start: I didn't want to build yet another app that hoovers up your personal data. Your transactions, your loans, your savings — that's your business, not mine. PesoNest was designed with that in mind from day one.</p>
+      <p>One thing I was very intentional about from the start: I didn't want to build yet another app that hoovers up your personal data. Your transactions, your loans, your savings — that's your business, not mine.</p>
     </div>
 
-    <div class="section">
-      <h2>📱 Your data lives on your phone</h2>
-      <p>Everything you enter into PesoNest — your transactions, cards, loans, savings goals, budget limits — is stored locally on your device using SQLite. That's a database that lives entirely on your phone, not on a server somewhere.</p>
+    <hr />
+
+    <div class="block">
+      <h2>Your data lives on your phone</h2>
+      <p>Everything you enter into PesoNest — transactions, cards, loans, savings goals, budget limits — is stored locally on your device using SQLite. That's a database that lives entirely on your phone, not on a server somewhere.</p>
       <p>I don't have a dashboard where I can look up your spending. I genuinely cannot see your data. That's by design.</p>
-      <div class="highlight-box">
-        No account required. No email. No sign-up form. You install the app and it just works.
-      </div>
+      <div class="callout">No account required. No email. No sign-up form. You install the app and it just works.</div>
     </div>
 
-    <div class="section">
-      <h2>☁️ The two times something goes online</h2>
-      <p>There are exactly two features that involve a server, and both of them only happen when you deliberately choose to use them.</p>
-      <p><strong>Joint Loans</strong> — If you share a loan with someone via QR code, PesoNest temporarily stores the loan data on a server so both phones can stay in sync. It's linked to a random anonymous ID that gets assigned to your install — not your name, not your number, nothing personal. I can't tell who it belongs to even if I tried.</p>
+    <hr />
+
+    <div class="block">
+      <h2>The two times something goes online</h2>
+      <p>There are exactly two features that involve a server, and both only happen when you deliberately choose to use them.</p>
+      <p><strong>Joint Loans</strong> — If you share a loan with someone via QR code, PesoNest temporarily stores the loan data on a server so both phones can stay in sync. It's linked to a random anonymous ID — not your name, not your number, nothing personal.</p>
       <p><strong>Device Transfer</strong> — Moving to a new phone? This feature puts a temporary encrypted copy of your data on the server for up to 24 hours. Once your new phone picks it up, it's deleted. The code is one-time use and expires on its own.</p>
-      <p>That's it. Those are the only two moments data leaves your device, and both require you to actively initiate them.</p>
     </div>
 
-    <div class="section">
-      <h2>🚫 What I don't collect — at all</h2>
-      <p>To be completely straightforward:</p>
+    <hr />
+
+    <div class="block">
+      <h2>What I don't collect — at all</h2>
       <ul>
-        <li>I don't collect your name, email, or phone number</li>
-        <li>I don't store real bank account or card numbers — what you enter in PesoNest is just a label for your own tracking</li>
-        <li>I don't track how you use the app, what screens you visit, or how long you stay</li>
-        <li>No analytics. No ads. No selling data to third parties.</li>
+        <li>Your name, email, or phone number</li>
+        <li>Real bank account or card numbers</li>
+        <li>How you use the app — no analytics, no tracking</li>
+        <li>Your location, contacts, or photos</li>
+        <li>Advertising identifiers</li>
       </ul>
-      <p>I'm not running an ad business on the side. PesoNest makes money through Premium subscriptions, not your information.</p>
+      <p style="margin-top: 12px;">I'm not running an ad business on the side. PesoNest makes money through Premium subscriptions, not your information.</p>
     </div>
 
-    <div class="section">
-      <h2>🔔 Notifications</h2>
-      <p>PesoNest can remind you when a loan payment is due, or nudge you on a savings schedule you set. These are all scheduled on your device — no server involved, no internet needed for them to fire.</p>
-      <p>You're in full control of this. Turn them on or off anytime from the Settings screen or your phone's own notification settings.</p>
+    <hr />
+
+    <div class="block">
+      <h2>Notifications</h2>
+      <p>Loan due date reminders and auto-save nudges are all scheduled on your device. No server involved, no internet needed for them to fire. You can turn them off anytime from Settings.</p>
     </div>
 
-    <div class="section">
-      <h2>💎 If you go Premium</h2>
-      <p>Premium is handled by Apple or Google — whoever's app store you downloaded PesoNest from. I use RevenueCat to verify subscription status, but I never see your billing details. Your card info stays between you and Apple or Google.</p>
+    <hr />
+
+    <div class="block">
+      <h2>Premium purchases</h2>
+      <p>Premium is handled by Apple or Google. I use RevenueCat to verify subscription status, but I never see your billing details. Your card info stays between you and the App Store.</p>
     </div>
 
-    <div class="section">
-      <h2>📤 Exporting your data</h2>
-      <p>Premium members can export a full backup as a JSON file, or pull just the transactions as a CSV. When you do this, the file gets created on your phone and shared directly through iOS or Android's share sheet — your email, Google Drive, AirDrop, whatever you choose. It doesn't pass through any server on the way out.</p>
+    <hr />
+
+    <div class="block">
+      <h2>Exporting your data</h2>
+      <p>Premium members can export a full JSON backup or a CSV of transactions. The file is created on your phone and shared through iOS or Android's share sheet — it doesn't pass through any server on the way out.</p>
     </div>
 
-    <div class="section">
-      <h2>🛡️ Security</h2>
-      <p>For the features that do touch a server, everything goes over HTTPS. On the backend (Supabase), I've set up Row Level Security — which means a device can only ever access data that belongs to it. Your loan data is invisible to every other device, and theirs is invisible to you.</p>
+    <hr />
+
+    <div class="block">
+      <h2>Security</h2>
+      <p>Any time data touches our server, it goes over HTTPS. I've set up Row Level Security on the backend — a device can only ever access data that belongs to it.</p>
     </div>
 
-    <div class="section">
-      <h2>🔄 If I ever change this</h2>
-      <p>If I ever make a meaningful change to how PesoNest handles data, I'll tell you through the app before it happens. I won't just quietly update this page and move on.</p>
+    <hr />
+
+    <div class="block">
+      <h2>If I ever change this</h2>
+      <p>If I make a meaningful change to how PesoNest handles data, I'll tell you through the app before it happens. I won't just quietly update this page and move on.</p>
     </div>
 
-    <div class="contact-box">
-      <h3>Have a question?</h3>
-      <p>I actually read my emails. If something here is unclear, or you're wondering about something I didn't cover, just reach out directly.</p>
+    <div class="contact">
+      <p>Have a question? I actually read my emails.</p>
       <a href="mailto:wilfredojrsoriano@gmail.com">Email me</a>
     </div>
 
-  </main>
+  </div>
 
   <footer>
-    <p>© 2026 PesoNest · Wilfredo Soriano · All rights reserved</p>
-    <p style="margin-top: 8px;">
-      <a href="./privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp;
-      <a href="./terms.html">Terms of Use</a>
-    </p>
+    <p>© 2026 PesoNest · Wilfredo Soriano &nbsp;·&nbsp; <a href="./privacy-policy.html">Privacy Policy</a> · <a href="./terms.html">Terms of Use</a></p>
   </footer>
 
 </body>
