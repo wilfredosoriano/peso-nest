@@ -25,6 +25,8 @@ export const initializePurchases = (): void => {
 };
 
 export const checkPremiumEntitlement = async (): Promise<boolean> => {
+  const apiKey = Platform.OS === 'ios' ? RC_API_KEY_IOS : RC_API_KEY_ANDROID;
+  if (isPlaceholder(apiKey)) return false; // not configured yet
   try {
     const Purchases = getPurchases();
     if (!Purchases) return false;
