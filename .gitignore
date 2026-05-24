@@ -5,15 +5,32 @@
 expo-env.d.ts
 # @end expo-cli
 
+# Dependencies
 node_modules/
+
+# Expo
 .expo/
 dist/
 web-build/
+
+# Native build artifacts
+android/build/
+android/.gradle/
+android/app/build/
+android/app/.cxx/
+android/app/src/main/assets/
+ios/build/
+ios/Pods/
+ios/DerivedData/
 *.orig.*
-.DS_Store
+
+# Secrets & certs
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+
+# OS
+.DS_Store
 yarn-error.log
