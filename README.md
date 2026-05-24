@@ -5,7 +5,7 @@
 <h1 align="center">PesoNest</h1>
 
 <p align="center">
-  A personal finance tracker built for Filipinos — track spending, manage loans, grow savings, and stay on budget. All data stays on your device.
+  A personal finance app for tracking spending, managing loans, growing savings, and staying on budget. Everything stays on your device.
 </p>
 
 <p align="center">
@@ -19,36 +19,35 @@
 
 ## Features
 
-### 💸 Transactions
+**Transactions**
 - Log income and expenses with categories
 - Link transactions to specific bank cards
 - Over-budget push notifications
 - Export to CSV for spreadsheet analysis
 
-### 💳 Cards
+**Cards**
 - Add debit and credit cards with custom gradient designs
 - Track balance per card
 - Visa and Mastercard network badges
 
-### 🏦 Loans
+**Loans**
 - Track personal and bank loans (diminishing or add-on interest)
-- **Joint Loans** — share a loan via QR code; real-time sync when the other party pays or updates
+- Joint Loans — share a loan via QR code with real-time sync when the other party pays or updates
 - Pay down loans with outstanding balance tracking
 - Due date push notifications (1, 3, or 7 days before)
 
-### 🎯 Savings Goals
+**Savings Goals**
 - Create goals with target amounts and category images
 - Deposit and withdraw with optional card deduction
 - Transfer funds between goals
-- Auto-Save reminders (daily, weekly, monthly push notifications)
-- Completion celebration on reaching target
+- Auto-Save reminders via push notification
 
-### 📊 Budget Goals
+**Budget Goals**
 - Set spending limits per category
 - Visual progress tracking
 - Over-budget alerts after each expense
 
-### ⚙️ Settings & Data
+**Settings & Data**
 - Full JSON backup and restore (Premium)
 - CSV export of all transactions (Premium)
 - Device Transfer — move all data to a new phone via a 6-digit code, no account needed
@@ -99,32 +98,28 @@ peso-nest/
 - [Privacy Policy](https://wilfredosoriano.github.io/peso-nest-legal/privacy-policy.html)
 - [Terms of Use](https://wilfredosoriano.github.io/peso-nest-legal/terms.html)
 
-All financial data is stored **locally on your device** using SQLite. No personal data is sent to any server without your explicit action (e.g. sharing a joint loan or transferring to a new device).
+All financial data is stored locally on your device. Nothing is sent to any server unless you explicitly trigger it — like sharing a joint loan or transferring to a new phone.
 
 ---
 
-## Getting Started (Development)
+## Getting Started
 
 ```bash
-# Install dependencies
 npm install
-
-# Start Expo dev server
 npx expo start
+```
 
-# Run on iOS simulator
+For native builds:
+
+```bash
 npx expo run:ios
-
-# Run on Android emulator
 npx expo run:android
 ```
 
-> Requires Node 18+, Expo CLI, and either Xcode (iOS) or Android Studio (Android).
+Requires Node 18+, Expo CLI, and Xcode (iOS) or Android Studio (Android).
 
 ---
 
 ## License
 
-© 2026 Wilfredo Soriano. All rights reserved.
-
-This is a private project. The source code is not open for redistribution or commercial use.
+© 2026 PesoNest. All rights reserved. Not open for redistribution or commercial use.
